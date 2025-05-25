@@ -7,6 +7,7 @@ import com.crm.mapper.TerritoryMapper;
 import com.crm.model.Territory;
 import com.crm.repository.TerritoryRepository;
 import com.crm.service.TerritoryService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -14,16 +15,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class TerritoryServiceImp implements TerritoryService {
 
     private final TerritoryMapper territoryMapper;
     private final TerritoryRepository territoryRepository;
-
-    public TerritoryServiceImp(TerritoryMapper territoryMapper, TerritoryRepository territoryRepository) {
-        this.territoryMapper = territoryMapper;
-        this.territoryRepository = territoryRepository;
-    }
-
 
     @Override
     public TerritoryDto create(TerritoryDto dto) {

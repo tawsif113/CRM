@@ -9,7 +9,6 @@ public interface LeadMapper {
 
     LeadDTO toDto(Lead lead);
 
-    @Mapping(target = "id", ignore = true) // Ignore the ID when mapping from DTO to Entity
     Lead toEntity(LeadDTO leadDTO);
 
     @InheritConfiguration(name = "toEntity")

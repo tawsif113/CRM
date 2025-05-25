@@ -4,6 +4,7 @@ import com.crm.dto.DeleteResponseDto;
 import com.crm.dto.TerritoryDto;
 import com.crm.service.TerritoryService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -11,13 +12,10 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/crm/api/v1/territories")
+@RequiredArgsConstructor
 public class TerritoryController {
 
     private final TerritoryService territoryService;
-
-    public TerritoryController(TerritoryService territoryService) {
-        this.territoryService = territoryService;
-    }
 
     @PostMapping
     public ResponseEntity<TerritoryDto> createTerritory(@Valid @RequestBody TerritoryDto territoryDto) {

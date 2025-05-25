@@ -9,7 +9,6 @@ public interface TerritoryMapper {
 
     TerritoryDto toDto(Territory territory);
 
-    @Mapping(target = "id", ignore = true)
     Territory toEntity(TerritoryDto territoryDto);
 
     @InheritConfiguration(name = "toEntity")

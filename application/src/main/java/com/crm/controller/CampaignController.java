@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/crm/api/v1/campaigns")
+@RequestMapping("/api/v1/campaigns")
 @RequiredArgsConstructor
 public class CampaignController {
 

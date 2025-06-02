@@ -5,14 +5,14 @@ import com.crm.dto.DeleteResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 
-public interface BaseService<D extends BaseDto> {
-    D create(D dto);
+public interface BaseService<E extends BaseDto,D> {
+    E create(D dto);
 
-    D find(Long id);
+    E find(Long id);
 
-    D update(Long id, D dto);
+    E update(Long id, D dto);
 
     DeleteResponseDto delete(Long id);
 
-    Page<D> findAll(int pageNumber, int pageSize, Sort.Direction direction, String sortField);
+    Page<E> findAll(int pageNumber, int pageSize, Sort.Direction direction, String sortField);
 }

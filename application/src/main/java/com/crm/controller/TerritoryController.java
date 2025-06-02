@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/crm/api/v1/territories")
+@RequestMapping("/api/v1/territories")
 @RequiredArgsConstructor
 public class TerritoryController {
 

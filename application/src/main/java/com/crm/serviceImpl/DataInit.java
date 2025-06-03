@@ -1,12 +1,9 @@
 package com.crm.serviceImpl;
 
 import com.crm.enumTypes.AccountType;
-import com.crm.model.Account;
-import com.crm.model.PaymentTerms;
-import com.crm.model.PriceList;
-import com.crm.repository.AccountRepository;
-import com.crm.repository.PaymentTermsRepository;
-import com.crm.repository.PriceListRepository;
+import com.crm.exception.NotFoundException;
+import com.crm.model.*;
+import com.crm.repository.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -18,6 +15,8 @@ public class DataInit {
     private final PaymentTermsRepository paymentTermsRepository;
     private final AccountRepository accountRepository;
     private final PriceListRepository priceListRepository;
+    private final AccountLedgerRepository accountLedgerRepository;
+    private final SalesPersonRepository salesPersonRepository;
 
     ///  TESTING PURPOSES ONLY
 
@@ -55,8 +54,28 @@ public class DataInit {
             defaultPriceList.setMarkupPercentage(0.1);
             priceListRepository.save(defaultPriceList);
         }
-    }
 
+        if (accountLedgerRepository.count() == 0) {
+            AccountingLedger ledger = new AccountingLedger();
+            ledger.setDescription("Initial Ledger Entry");
+
+            Account receivableAccount = accountRepository.findByAccountCode("ACC-RECV-001")
+                    .orElseThrow(() -> new NotFoundException("Receivable Account not found"));
+
+            ledger.setAccount(receivableAccount.getAccountName());
+
+            accountLedgerRepository.save(ledger);
+        }
+
+        if (salesPersonRepository.count() == 0) {
+            SalesPerson salesperson = new SalesPerson();
+            salesperson.setFirstName("John");
+            salesperson.setLastName("Doe");
+            salesperson.setEmail("john.doe@example.com");
+            salesPersonRepository.save(salesperson);
+        }
+
+    }
 
 
 }

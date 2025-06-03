@@ -3,6 +3,7 @@ package com.crm.controller;
 import com.crm.dto.requestDtos.CustomerGroupRequestDto;
 import com.crm.dto.responseDtos.CustomerGroupResponseDto;
 import com.crm.service.CustomerGroupService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -22,12 +23,12 @@ public class CustomerGroupController {
     }
 
     @PostMapping
-    public ResponseEntity<CustomerGroupResponseDto> createCustomerGroup(@RequestBody CustomerGroupRequestDto customerGroupRequestDto) {
+    public ResponseEntity<CustomerGroupResponseDto> createCustomerGroup(@Valid @RequestBody CustomerGroupRequestDto customerGroupRequestDto) {
         return ResponseEntity.ok(customerGroupService.create(customerGroupRequestDto));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<CustomerGroupResponseDto> updateCustomerGroup(@PathVariable(value = "id") Long id, @RequestBody CustomerGroupRequestDto customerGroupRequestDto) {
+    public ResponseEntity<CustomerGroupResponseDto> updateCustomerGroup(@PathVariable(value = "id") Long id, @Valid @RequestBody CustomerGroupRequestDto customerGroupRequestDto) {
         return ResponseEntity.ok(customerGroupService.update(id, customerGroupRequestDto));
     }
 

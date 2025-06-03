@@ -109,4 +109,9 @@ public class CustomerGroupServiceImp implements CustomerGroupService {
         Page<CustomerGroup> customerGroups = customerGroupRepository.findAll(pageable);
         return customerGroups.map(customerGroupMapper::toDto);
     }
+
+    @Override
+    public CustomerGroup findById(Long id) {
+        return customerGroupRepository.findById(id).orElseThrow(() -> new NotFoundException("Customer group not found with id: " + id));
+    }
 }

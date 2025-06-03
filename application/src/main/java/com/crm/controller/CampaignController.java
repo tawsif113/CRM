@@ -2,6 +2,7 @@ package com.crm.controller;
 
 import com.crm.dto.CampaignDto;
 import com.crm.service.CampaignService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -16,7 +17,7 @@ public class CampaignController {
     private final CampaignService campaignService;
 
     @PostMapping
-    public ResponseEntity<CampaignDto> createCampaign(CampaignDto campaignDto) {
+    public ResponseEntity<CampaignDto> createCampaign(@Valid @RequestBody CampaignDto campaignDto) {
         return ResponseEntity.ok(campaignService.create(campaignDto));
     }
 
@@ -26,7 +27,7 @@ public class CampaignController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<CampaignDto> updateCampaign(@PathVariable(value = "id") Long id, CampaignDto campaignDto) {
+    public ResponseEntity<CampaignDto> updateCampaign(@PathVariable(value = "id") Long id, @Valid @RequestBody CampaignDto campaignDto) {
         return ResponseEntity.ok(campaignService.update(id, campaignDto));
     }
 

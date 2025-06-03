@@ -1,9 +1,7 @@
 package com.crm.model;
 
 import com.crm.enumTypes.AccountType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -21,6 +19,7 @@ public class Account extends BaseEntity{
      * Type of account (e.g., "RECEIVABLE", "ADVANCE", "BANK", etc.).
      * You could also use an enum if you have a fixed set of types.
      */
+    @Enumerated(EnumType.STRING)
     @Column(name = "account_type", nullable = false)
     private AccountType accountType;
 

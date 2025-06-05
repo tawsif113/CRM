@@ -16,5 +16,4 @@ public class SalesPerson extends BaseEntity {
     private String email;
     private String phoneNumber;
 
-    ///  TODO : ADD MORE FIELDS AS NEEDED
 }

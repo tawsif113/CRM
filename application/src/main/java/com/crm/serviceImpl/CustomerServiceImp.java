@@ -31,7 +31,7 @@ public class CustomerServiceImp implements CustomerService {
     private final SalesPersonRepository salesPersonRepository;
     private final AccountLedgerRepository accountLedgerRepository;
     private final TerritoryRepository territoryRepository;
-    private final CustomerMapper mapper;
+    private  CustomerMapper mapper;
 
     @Override
     public CustomerResponseDto create(CustomerRequestDto dto) {

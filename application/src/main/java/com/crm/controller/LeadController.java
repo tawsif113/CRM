@@ -2,6 +2,7 @@ package com.crm.controller;
 
 import com.crm.dto.LeadDTO;
 import com.crm.serviceImpl.LeadServiceImp;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -9,13 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/leads")
 public class LeadController {
 
-    @Autowired
-    private LeadServiceImp leadService;
+
+    private final LeadServiceImp leadService;
 
     // Create Lead
     @PostMapping

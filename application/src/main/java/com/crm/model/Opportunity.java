@@ -4,18 +4,13 @@ import com.crm.enumTypes.Currency;
 import com.crm.enumTypes.OpportunityFrom;
 import com.crm.enumTypes.OpportunityStage;
 import com.crm.enumTypes.OpportunityType;
-import com.crm.model.BaseEntity;
-import com.crm.model.Campaign;
-import com.crm.model.Customer;
-import com.crm.model.Lead;
+
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity

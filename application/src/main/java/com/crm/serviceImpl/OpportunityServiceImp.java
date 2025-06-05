@@ -110,6 +110,8 @@ public class OpportunityServiceImp implements OpportunityService {
 
     @Override
     public OpportunityResponseDto find(Long id) {
+        Opportunity opportunity = opportunityRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Opportunity not found with id: " + id));
         return null;
     }
 

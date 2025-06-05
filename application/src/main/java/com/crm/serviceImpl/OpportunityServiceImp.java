@@ -13,6 +13,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,7 @@ public class OpportunityServiceImp implements OpportunityService {
     private final OpportunityMapper opportunityMapper;
     private final CampaignRepository campaignRepository;
     private final ItemRepository itemRepository;
+
 
 
     @Transactional
@@ -112,21 +115,60 @@ public class OpportunityServiceImp implements OpportunityService {
     public OpportunityResponseDto find(Long id) {
         Opportunity opportunity = opportunityRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Opportunity not found with id: " + id));
-        return null;
+        return opportunityMapper.toDto(opportunity);
     }
 
     @Override
     public OpportunityResponseDto update(Long id, OpportunityRequestDto dto) {
-        return null;
+
+        try {
+            Opportunity opportunity = opportunityRepository.findById(id)
+                    .orElseThrow(() -> new NotFoundException("Opportunity not found with id: " + id));
+
+            if (dto.getOpportunityFrom() == null) {
+                throw new NotFoundException("opportunity_from must be provided");
+            }
+            if (dto.getOpportunityFrom() == OpportunityFrom.LEAD && dto.getLeadId() == null) {
+                throw new NotFoundException("Lead must be provided for lead-originated opportunities");
+            }
+            if (dto.getOpportunityFrom() == OpportunityFrom.CUSTOMER && dto.getLeadId() != null) {
+                throw new NotFoundException("Lead must be null for customer-originated opportunities");
+            }
+
+            if (dto.getLeadId() != null) {
+                leadRepository.findById(dto.getLeadId())
+                        .orElseThrow(() -> new NotFoundException("Lead not found with id: " + dto.getLeadId()));
+            }
+
+
+            if (dto.getCustomerId() != null) {
+              customerRepository.findById(dto.getCustomerId())
+                        .orElseThrow(() -> new NotFoundException("Customer not found with id: " + dto.getCustomerId()));
+            }
+            opportunityMapper.updateEntity(dto,opportunity);
+            return opportunityMapper.toDto(opportunityRepository.save(opportunity));
+        }
+        catch (Exception ex) {
+            throw new IllegalArgumentException("Failed to update Opportunity: " + ex.getMessage());
+        }
     }
 
     @Override
     public DeleteResponseDto delete(Long id) {
-        return null;
+        opportunityRepository.findById(id).orElseThrow(()-> new NotFoundException("Opportunity not found with id: " + id));
+        DeleteResponseDto deleteResponseDto = new DeleteResponseDto();
+        opportunityRepository.deleteById(id);
+        deleteResponseDto.setId(id);
+        deleteResponseDto.setMessage("Opportunity deleted successfully");
+        return deleteResponseDto;
+
     }
 
     @Override
     public Page<OpportunityResponseDto> findAll(int pageNumber, int pageSize, Sort.Direction direction, String sortField) {
-        return null;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, direction, sortField);
+        Page<Opportunity> opportunities = opportunityRepository.findAll(pageable);
+        return opportunities.map(opportunityMapper::toDto);
+
     }
 }

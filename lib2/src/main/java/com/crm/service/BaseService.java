@@ -4,7 +4,11 @@ import com.crm.dto.BaseDto;
 import com.crm.dto.DeleteResponseDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
-
+///  * BaseService interface that defines common operations for services in the CRM application.
+ /*
+  @param <E> the type of the response DTO
+  @param <D> the type of the request DTO
+ */
 public interface BaseService<E extends BaseDto,D> {
     E create(D dto);
 

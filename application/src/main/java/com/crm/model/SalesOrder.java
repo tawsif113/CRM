@@ -25,6 +25,10 @@ public class SalesOrder extends BaseEntity{
     private SalesOrderStatus status;
 
     private BigDecimal totalAmount;
-    private String paymentTerms;
+
+    @ManyToOne
+    @JoinColumn(name = "payment_terms_id")
+    private PaymentTerms paymentTerms;
+
     private LocalDateTime deliveryDate;
 }

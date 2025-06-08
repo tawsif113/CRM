@@ -10,7 +10,6 @@ import com.crm.model.SalesPerson;
 import com.crm.repository.*;
 import com.crm.service.CustomerGroupService;
 import com.crm.service.CustomerService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +20,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class CustomerServiceImp implements CustomerService {
 
     private final CustomerRepository customerRepository;
@@ -31,7 +29,18 @@ public class CustomerServiceImp implements CustomerService {
     private final SalesPersonRepository salesPersonRepository;
     private final AccountLedgerRepository accountLedgerRepository;
     private final TerritoryRepository territoryRepository;
-    private  CustomerMapper mapper;
+    private final CustomerMapper mapper;
+
+    public CustomerServiceImp(CustomerRepository customerRepository, CustomerGroupService customerGroupService, PriceListRepository priceListRepository, PaymentTermsRepository paymentTermsRepository, SalesPersonRepository salesPersonRepository, AccountLedgerRepository accountLedgerRepository, TerritoryRepository territoryRepository, CustomerMapper mapper) {
+        this.customerRepository = customerRepository;
+        this.customerGroupService = customerGroupService;
+        this.priceListRepository = priceListRepository;
+        this.paymentTermsRepository = paymentTermsRepository;
+        this.salesPersonRepository = salesPersonRepository;
+        this.accountLedgerRepository = accountLedgerRepository;
+        this.territoryRepository = territoryRepository;
+        this.mapper = mapper;
+    }
 
     @Override
     public CustomerResponseDto create(CustomerRequestDto dto) {

@@ -3,7 +3,9 @@ package com.crm.serviceImpl;
 import com.crm.dto.DeleteResponseDto;
 import com.crm.dto.requestDtos.OpportunityRequestDto;
 import com.crm.dto.responseDtos.OpportunityResponseDto;
+import com.crm.dto.responseDtos.OpportunityStatsResponse;
 import com.crm.enumTypes.OpportunityFrom;
+import com.crm.enumTypes.OpportunityStage;
 import com.crm.exception.NotFoundException;
 import com.crm.mapper.OpportunityMapper;
 import com.crm.model.*;
@@ -19,7 +21,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -169,6 +174,23 @@ public class OpportunityServiceImp implements OpportunityService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, direction, sortField);
         Page<Opportunity> opportunities = opportunityRepository.findAll(pageable);
         return opportunities.map(opportunityMapper::toDto);
+
+    }
+
+
+    @Override
+    public OpportunityStatsResponse getStats(){
+        int totalOpportunities = (int) opportunityRepository.count();
+        List<Object[]> stageCounts = opportunityRepository.getSummaryByStage() ;
+
+        Map<OpportunityStage, Long> stageSummary = new HashMap<>();
+        for( Object[] stageCount : stageCounts) {
+            OpportunityStage stage = (OpportunityStage) stageCount[0];
+            Long count = ((Number) stageCount[1]).longValue();
+            stageSummary.put(stage, count);
+        }
+
+        return new OpportunityStatsResponse(totalOpportunities, stageSummary);
 
     }
 }

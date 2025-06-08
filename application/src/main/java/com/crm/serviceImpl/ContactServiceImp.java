@@ -40,32 +40,52 @@ public class ContactServiceImp implements ContactService {
             }
 
         }
-
         Contact savedContact = contactRepository.save(contact);
         log.info("Contact created successfully with ID: {}", savedContact.getId());
-
         return contactMapper.toResponseDTO(savedContact);
 
     }
 
     @Override
     public ContactResponseDTO find(Long id) {
-        return null;
+        Contact contact= contactRepository.findById(id).orElseThrow(
+                ()-> new RuntimeException("Contact not found with id: " + id)
+        );
+        log.info("Retrieving contact with ID: {}", id);
+        return contactMapper.toResponseDTO(contact);
     }
 
     @Override
     public ContactResponseDTO update(Long id, ContactRequestDTO dto) {
-        return null;
+        Contact contact = contactRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("Contact not found with id: " + id)
+        );
+        log.info("Updating contact with ID: {}", id);
+        contactMapper.updateEntityFromDTO(dto, contact);
+        return contactMapper.toResponseDTO( contactRepository.save(contact));
     }
 
     @Override
     public DeleteResponseDto delete(Long id) {
-        return null;
+        Contact contact = contactRepository.findById(id).orElseThrow(
+                () -> new RuntimeException("Contact not found with id: " + id)
+        );
+        contactRepository.delete(contact);
+        DeleteResponseDto deleteResponseDto = new DeleteResponseDto();
+        deleteResponseDto.setMessage("Contact deleted successfully");
+        deleteResponseDto.setId(id);
+        log.info("Contact with ID: {} deleted successfully", id);
+        return deleteResponseDto;
+
+
     }
 
     @Override
     public Page<ContactResponseDTO> findAll( int pageNumber, int pageSize, Sort.Direction direction, String sortField) {
-        return null;
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, direction, sortField);
+        Page<Contact> contactPage = contactRepository.findAll(pageable);
+        log.info("Retrieved {} contacts from the database", contactPage.getTotalElements());
+        return contactPage.map(contactMapper::toResponseDTO);
     }
 
     @Override

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "contact_associations")
+@Table(name = "Contact_Entity_Link")
 
 public class ContactEntityLink extends BaseEntity{
 

@@ -6,6 +6,7 @@ import com.crm.dto.responseDtos.CustomerResponseDto;
 import com.crm.exception.NotFoundException;
 import com.crm.mapper.CustomerMapper;
 import com.crm.model.Customer;
+import com.crm.model.SalesOrder;
 import com.crm.model.SalesPerson;
 import com.crm.repository.*;
 import com.crm.service.CustomerGroupService;
@@ -147,5 +148,10 @@ public class CustomerServiceImp implements CustomerService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, direction, sortField);
         Page<Customer> customers = customerRepository.findAll(pageable);
         return customers.map(mapper::toDto);
+    }
+
+    @Override
+    public Customer findById(Long id) {
+        return customerRepository.findById(id).orElseThrow(()->new NotFoundException("Customer not found"));
     }
 }

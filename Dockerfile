@@ -15,7 +15,7 @@ COPY application ./application
 RUN ./gradlew --no-daemon clean :application:bootJar
 
 # ─── 2) RUN STAGE ─────────────────────────────────────────────────────────────
-FROM eclipse-temurin:17-jre-alpine
+FROM openjdk:17-alpine
 WORKDIR /app
 
 # copy the built JAR from the builder

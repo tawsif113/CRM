@@ -13,18 +13,13 @@ import java.time.LocalDate;
 @Table(name = "delivery_note")
 public class DeliveryNote extends BaseEntity{
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "delivery_note_id", nullable = false)
-    private DeliveryNote deliveryNote;
+    private SalesOrder salesOrder;
 
     @Column(name = "delivery_date", nullable = false)
     private LocalDate deliveryDate;
 
     @Enumerated(EnumType.STRING)
     private DeliveryStatus status;
-
-    @ManyToOne
-    @JoinColumn(name = "item_id", nullable = false)
-    private Item item;
-
 }

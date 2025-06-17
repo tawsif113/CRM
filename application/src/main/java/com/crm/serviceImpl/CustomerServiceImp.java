@@ -6,10 +6,12 @@ import com.crm.dto.responseDtos.CustomerResponseDto;
 import com.crm.exception.NotFoundException;
 import com.crm.mapper.CustomerMapper;
 import com.crm.model.Customer;
+import com.crm.model.SalesOrder;
 import com.crm.model.SalesPerson;
 import com.crm.repository.*;
 import com.crm.service.CustomerGroupService;
 import com.crm.service.CustomerService;
+import com.crm.service.PaymentTermsService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -25,17 +27,17 @@ public class CustomerServiceImp implements CustomerService {
     private final CustomerRepository customerRepository;
     private final CustomerGroupService customerGroupService;
     private final PriceListRepository priceListRepository;
-    private final PaymentTermsRepository paymentTermsRepository;
+    private final PaymentTermsService paymentTermsService;
     private final SalesPersonRepository salesPersonRepository;
     private final AccountLedgerRepository accountLedgerRepository;
     private final TerritoryRepository territoryRepository;
     private final CustomerMapper mapper;
 
-    public CustomerServiceImp(CustomerRepository customerRepository, CustomerGroupService customerGroupService, PriceListRepository priceListRepository, PaymentTermsRepository paymentTermsRepository, SalesPersonRepository salesPersonRepository, AccountLedgerRepository accountLedgerRepository, TerritoryRepository territoryRepository, CustomerMapper mapper) {
+    public CustomerServiceImp(CustomerRepository customerRepository, CustomerGroupService customerGroupService, PriceListRepository priceListRepository, PaymentTermsService paymentTermsService, SalesPersonRepository salesPersonRepository, AccountLedgerRepository accountLedgerRepository, TerritoryRepository territoryRepository, CustomerMapper mapper) {
         this.customerRepository = customerRepository;
         this.customerGroupService = customerGroupService;
         this.priceListRepository = priceListRepository;
-        this.paymentTermsRepository = paymentTermsRepository;
+        this.paymentTermsService = paymentTermsService;
         this.salesPersonRepository = salesPersonRepository;
         this.accountLedgerRepository = accountLedgerRepository;
         this.territoryRepository = territoryRepository;
@@ -55,10 +57,7 @@ public class CustomerServiceImp implements CustomerService {
                         .findById(dto.getPriceListId())
                         .orElseThrow(() -> new NotFoundException("Price List not found")));
 
-        if(dto.getPaymentTermsId() != null) customer
-                .setPaymentTerms(paymentTermsRepository
-                        .findById(dto.getPaymentTermsId())
-                        .orElseThrow(() -> new NotFoundException("Payment Terms not found")));
+        if(dto.getPaymentTermsId() != null) customer.setPaymentTerms(paymentTermsService.findById(dto.getPaymentTermsId()));
 
         if(dto.getSalesPersonIds() != null && !dto.getSalesPersonIds().isEmpty()) {
             Set<SalesPerson> salesPersons = dto.getSalesPersonIds().stream().map(
@@ -105,10 +104,8 @@ public class CustomerServiceImp implements CustomerService {
                         .findById(dto.getPriceListId())
                         .orElseThrow(() -> new NotFoundException("Price List not found")));
 
-        if(dto.getPaymentTermsId() != null) customer
-                .setPaymentTerms(paymentTermsRepository
-                        .findById(dto.getPaymentTermsId())
-                        .orElseThrow(() -> new NotFoundException("Payment Terms not found")));
+        if(dto.getPaymentTermsId() != null) customer.setPaymentTerms(paymentTermsService.findById(dto.getPaymentTermsId()));
+
         if(dto.getSalesPersonIds() != null && !dto.getSalesPersonIds().isEmpty()) {
             Set<SalesPerson> salesPersons = dto.getSalesPersonIds().stream().map(
                     salesPersonId -> salesPersonRepository
@@ -147,5 +144,10 @@ public class CustomerServiceImp implements CustomerService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, direction, sortField);
         Page<Customer> customers = customerRepository.findAll(pageable);
         return customers.map(mapper::toDto);
+    }
+
+    @Override
+    public Customer findById(Long id) {
+        return customerRepository.findById(id).orElseThrow(()->new NotFoundException("Customer not found"));
     }
 }

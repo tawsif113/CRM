@@ -8,9 +8,9 @@ import com.crm.mapper.CustomerGroupMapper;
 import com.crm.model.CustomerGroup;
 import com.crm.repository.AccountRepository;
 import com.crm.repository.CustomerGroupRepository;
-import com.crm.repository.PaymentTermsRepository;
 import com.crm.repository.PriceListRepository;
 import com.crm.service.CustomerGroupService;
+import com.crm.service.PaymentTermsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,18 +24,16 @@ public class CustomerGroupServiceImp implements CustomerGroupService {
 
     private final CustomerGroupMapper customerGroupMapper;
     private final CustomerGroupRepository customerGroupRepository;
-    private final PaymentTermsRepository paymentTermsRepository;
     private final AccountRepository accountRepository;
     private final PriceListRepository priceListRepository;
-
+    private final PaymentTermsService paymentTermsService;
 
 
     @Override
     public CustomerGroupResponseDto create(CustomerGroupRequestDto dto) {
         CustomerGroup customerGroup = customerGroupMapper.toEntity(dto);
 
-        customerGroup.setPaymentTerms(paymentTermsRepository.findById(dto.getPaymentTermsId())
-                .orElseThrow(() -> new NotFoundException("Payment terms not found")));
+        customerGroup.setPaymentTerms(paymentTermsService.findById(dto.getPaymentTermsId()));
 
         customerGroup.setReceivableAccount(accountRepository.findById(dto.getReceivableAccountId())
                 .orElseThrow(() -> new NotFoundException("Receivable account not found")));
@@ -71,8 +69,7 @@ public class CustomerGroupServiceImp implements CustomerGroupService {
 
         customerGroupMapper.updateEntityFromDto(dto, customerGroup);
 
-        customerGroup.setPaymentTerms(paymentTermsRepository.findById(dto.getPaymentTermsId())
-                .orElseThrow(() -> new NotFoundException("Payment terms not found")));
+        customerGroup.setPaymentTerms(paymentTermsService.findById(dto.getPaymentTermsId()));
 
         customerGroup.setReceivableAccount(accountRepository.findById(dto.getReceivableAccountId())
                 .orElseThrow(() -> new NotFoundException("Receivable account not found")));

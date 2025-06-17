@@ -2,91 +2,77 @@ package com.crm.serviceImpl;
 
 import com.crm.dto.DeleteResponseDto;
 import com.crm.dto.requestDtos.SalesOrderRequestDto;
-import com.crm.dto.responseDtos.SalesOrderItemResponseDto;
 import com.crm.dto.responseDtos.SalesOrderResponseDto;
 import com.crm.exception.NotFoundException;
 import com.crm.mapper.SalesOrderMapper;
 import com.crm.model.SalesOrder;
-import com.crm.repository.PaymentTermsRepository;
 import com.crm.repository.SalesOrderRepository;
 import com.crm.service.CustomerService;
-import com.crm.service.SalesOrderItemService;
+import com.crm.service.PaymentTermsService;
 import com.crm.service.SalesOrderService;
-import org.springframework.context.annotation.Lazy;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
+@RequiredArgsConstructor
 public class SalesOrderServiceImp implements SalesOrderService {
 
     private final SalesOrderMapper salesOrderMapper;
     private final SalesOrderRepository salesOrderRepository;
+    private final PaymentTermsService paymentTermsService;
     private final CustomerService customerService;
-    private final PaymentTermsRepository paymentTermsRepository;
-    private final SalesOrderItemService salesOrderItemService;
-
-    public SalesOrderServiceImp(SalesOrderMapper salesOrderMapper,
-                                SalesOrderRepository salesOrderRepository,
-                                CustomerService customerService,
-                                PaymentTermsRepository paymentTermsRepository,
-                                @Lazy SalesOrderItemService salesOrderItemService) {
-        this.salesOrderMapper = salesOrderMapper;
-        this.salesOrderRepository = salesOrderRepository;
-        this.customerService = customerService;
-        this.paymentTermsRepository = paymentTermsRepository;
-        this.salesOrderItemService = salesOrderItemService;
-    }
 
     @Override
     public SalesOrderResponseDto create(SalesOrderRequestDto dto) {
 
         SalesOrder salesOrder = salesOrderMapper.toSalesOrderEntity(dto);
         salesOrder.setCustomer(customerService.findById(dto.getCustomerId()));
-        salesOrder.setPaymentTerms(paymentTermsRepository
-                .findById(dto.getPaymentTermsId())
-                .orElseThrow(() -> new NotFoundException("Payment Terms not found")));
+        salesOrder.setPaymentTerms(paymentTermsService.findById(dto.getPaymentTermsId()));
+
         salesOrder = salesOrderRepository.save(salesOrder);
-
-        SalesOrderResponseDto salesOrderResponseDto = salesOrderMapper.toSalesOrderResponseDto(salesOrder);
-
-        final SalesOrder finalSalesOrder = salesOrder;
-        if (dto.getItems() != null) {
-            List<SalesOrderItemResponseDto> result = dto.getItems().stream().map(
-                itemDto -> {
-                    SalesOrderItemResponseDto itemResponseDto = salesOrderItemService.create(itemDto);
-                    Long itemId = itemResponseDto.getId();
-                    itemResponseDto = salesOrderItemService.setSalesOrderReference(itemId, finalSalesOrder);
-                    return itemResponseDto;
-                }
-            ).toList();
-
-            salesOrderResponseDto.setItems(result);
-        }
-
-
-        return salesOrderResponseDto;
+        return salesOrderMapper.toSalesOrderResponseDto(salesOrder);
     }
 
     @Override
     public SalesOrderResponseDto find(Long id) {
-        return null;
+        SalesOrder salesOrder = salesOrderRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Sales Order not found with id: " + id));
+        return salesOrderMapper.toSalesOrderResponseDto(salesOrder);
     }
 
     @Override
     public SalesOrderResponseDto update(Long id, SalesOrderRequestDto dto) {
-        return null;
+        SalesOrder salesOrder = findById(id);
+        salesOrderMapper.updateSalesOrderFromDto(dto, salesOrder);
+        salesOrder.setCustomer(customerService.findById(dto.getCustomerId()));
+        salesOrder.setPaymentTerms(paymentTermsService.findById(dto.getPaymentTermsId()));
+        salesOrder = salesOrderRepository.save(salesOrder);
+        return salesOrderMapper.toSalesOrderResponseDto(salesOrder);
     }
 
     @Override
     public DeleteResponseDto delete(Long id) {
-        return null;
+        SalesOrder salesOrder = findById(id);
+        salesOrderRepository.delete(salesOrder);
+        DeleteResponseDto deleteResponseDto = new DeleteResponseDto();
+        deleteResponseDto.setId(id);
+        deleteResponseDto.setMessage("Sales Order deleted successfully");
+        return deleteResponseDto;
     }
 
     @Override
     public Page<SalesOrderResponseDto> findAll(int pageNumber, int pageSize, Sort.Direction direction, String sortField) {
-        return null;
+        Page<SalesOrder> salesOrders = salesOrderRepository.findAll(PageRequest.of(pageNumber, pageSize, Sort.by(direction, sortField))
+        );
+        return salesOrders.map(salesOrderMapper::toSalesOrderResponseDto);
+    }
+
+    @Override
+    public SalesOrder findById(Long id) {
+        return salesOrderRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Sales Order not found with id: " + id));
     }
 }

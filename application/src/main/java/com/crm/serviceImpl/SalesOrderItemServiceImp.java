@@ -9,6 +9,7 @@ import com.crm.model.SalesOrder;
 import com.crm.model.SalesOrderItem;
 import com.crm.repository.SalesOrderItemRepository;
 import com.crm.service.SalesOrderItemService;
+import com.crm.service.SalesOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,32 +23,36 @@ public class SalesOrderItemServiceImp implements SalesOrderItemService {
 
     private final SalesOrderItemRepository salesOrderItemRepository;
     private final SalesOrderItemMapper salesOrderItemMapper;
+    private final SalesOrderService salesOrderService;
 
     @Override
     public SalesOrderItemResponseDto create(SalesOrderItemRequestDto dto) {
-        return salesOrderItemMapper.toSalesOrderItemResponseDto(
-                salesOrderItemRepository.save(
-                        salesOrderItemMapper.toSalesOrderItemEntity(dto)
-                )
-        );
-        ///  after creating always set the SalesOrder reference. Method is in the interface
+
+        SalesOrder salesOrder = salesOrderService.findById(dto.getSalesOrderId());
+        SalesOrderItem salesOrderItem = salesOrderItemMapper.toEntity(dto);
+        salesOrderItem.setSalesOrder(salesOrder);
+
+        salesOrderItem = salesOrderItemRepository.save(salesOrderItem);
+
+        return salesOrderItemMapper.toDto(salesOrderItem);
+
     }
 
     @Override
     public SalesOrderItemResponseDto find(Long id) {
-        return salesOrderItemMapper.toSalesOrderItemResponseDto(
-                findById(id));
+        return salesOrderItemMapper.toDto(findById(id));
     }
 
     @Override
     public SalesOrderItemResponseDto update(Long id, SalesOrderItemRequestDto dto) {
 
         SalesOrderItem salesOrderItem = findById(id);
+        SalesOrder salesOrder = salesOrderService.findById(dto.getSalesOrderId());
+        salesOrderItem.setSalesOrder(salesOrder);
         salesOrderItemMapper.updateSalesOrderItemFromDto(dto, salesOrderItem);
-        return salesOrderItemMapper.toSalesOrderItemResponseDto(
+        return salesOrderItemMapper.toDto(
                 salesOrderItemRepository.save(salesOrderItem)
         );
-        ///  after updating always set the SalesOrder reference. Method is in the interface
     }
 
     @Override
@@ -65,21 +70,12 @@ public class SalesOrderItemServiceImp implements SalesOrderItemService {
     public Page<SalesOrderItemResponseDto> findAll(int pageNumber, int pageSize, Sort.Direction direction, String sortField) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, direction, sortField);
         Page<SalesOrderItem> salesOrderItems = salesOrderItemRepository.findAll(pageable);
-        return salesOrderItems.map(salesOrderItemMapper::toSalesOrderItemResponseDto);
+        return salesOrderItems.map(salesOrderItemMapper::toDto);
     }
 
     @Override
     public SalesOrderItem findById(Long id) {
         return salesOrderItemRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Sales Order Item not found with id: " + id));
-    }
-
-    @Override
-    public SalesOrderItemResponseDto setSalesOrderReference(Long id, SalesOrder salesOrder) {
-        SalesOrderItem salesOrderItem = findById(id);
-        salesOrderItem.setSalesOrder(salesOrder);
-        return salesOrderItemMapper.toSalesOrderItemResponseDto(
-                salesOrderItemRepository.save(salesOrderItem)
-        );
     }
 }

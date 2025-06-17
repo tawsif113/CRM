@@ -22,6 +22,5 @@ public class SalesOrderResponseDto extends BaseDto {
     private SalesOrderStatus status;
     private BigDecimal totalAmount;
     private PaymentTermInfoDto paymentTerms;
-    private List<SalesOrderItemResponseDto> items;
     private LocalDateTime deliveryDate;
 }

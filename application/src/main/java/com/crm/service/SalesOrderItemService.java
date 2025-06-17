@@ -7,5 +7,4 @@ import com.crm.model.SalesOrderItem;
 
 public interface SalesOrderItemService extends BaseService<SalesOrderItemResponseDto, SalesOrderItemRequestDto>{
     SalesOrderItem findById(Long id);
-    SalesOrderItemResponseDto setSalesOrderReference(Long id, SalesOrder salesOrder);
 }

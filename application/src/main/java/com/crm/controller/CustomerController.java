@@ -22,15 +22,16 @@ public class CustomerController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<CustomerResponseDto>> getCustomer(@PathVariable(value = "id") Long id) {
-        return ApiResponseBuilder.success(customerService.find(id),"Customer fetched successfully");
+        return ApiResponseBuilder.success(customerService.find(id), "Customer fetched successfully");
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<CustomerResponseDto>>> getAllCustomers(@RequestParam(defaultValue = "0") int pageNumber,
-                                                       @RequestParam(defaultValue = "10") int pageSize,
-                                                       @RequestParam(defaultValue = "ASC") Sort.Direction direction,
-                                                       @RequestParam(defaultValue = "id") String sortField) {
-        return ApiResponseBuilder.success(customerService.findAll(pageNumber, pageSize, direction, sortField),"Customers fetched successfully");
+    public ResponseEntity<ApiResponse<Page<CustomerResponseDto>>> getAllCustomers(
+            @RequestParam(defaultValue = "0") int pageNumber,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "ASC") Sort.Direction direction,
+            @RequestParam(defaultValue = "id") String sortField) {
+        return ApiResponseBuilder.success(customerService.findAll(pageNumber, pageSize, direction, sortField), "Customers fetched successfully");
     }
 
     @PostMapping
@@ -45,7 +46,7 @@ public class CustomerController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<DeleteResponseDto>> deleteCustomer(@PathVariable(value = "id") Long id) {
-        return ApiResponseBuilder.success(customerService.delete(id),"Customer deleted successfully");
+        return ApiResponseBuilder.success(customerService.delete(id), "Customer deleted successfully");
     }
 
 }

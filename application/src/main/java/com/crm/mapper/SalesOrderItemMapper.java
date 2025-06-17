@@ -9,11 +9,11 @@ import org.mapstruct.*;
 public interface SalesOrderItemMapper {
 
     @Mapping(target = "salesOrder", ignore = true)
-    SalesOrderItem toSalesOrderItemEntity(SalesOrderItemRequestDto dto);
+    SalesOrderItem toEntity(SalesOrderItemRequestDto dto);
 
-    SalesOrderItemResponseDto toSalesOrderItemResponseDto(SalesOrderItem entity);
+    SalesOrderItemResponseDto toDto(SalesOrderItem entity);
 
-    @InheritConfiguration(name = "toSalesOrderItemEntity")
+    @InheritConfiguration(name = "toEntity")
     @BeanMapping(nullValuePropertyMappingStrategy = org.mapstruct.NullValuePropertyMappingStrategy.IGNORE)
     void updateSalesOrderItemFromDto(SalesOrderItemRequestDto dto, @MappingTarget SalesOrderItem entity);
 

@@ -24,8 +24,6 @@ public class SalesOrderRequestDto {
 
     private LocalDateTime orderDate;
 
-    private List<SalesOrderItemRequestDto> items;
-
     private SalesOrderStatus status;
 
     private BigDecimal totalAmount;

@@ -1,6 +1,7 @@
 package com.crm.service;
 
-import com.crm.dto.CampaignDto;
+import com.crm.dto.requestDtos.CampaignRequestDto;
+import com.crm.dto.responseDtos.CampaignResponseDto;
 
-public interface CampaignService extends BaseService<CampaignDto,CampaignDto> {
+public interface CampaignService extends BaseService<CampaignResponseDto, CampaignRequestDto> {
 }

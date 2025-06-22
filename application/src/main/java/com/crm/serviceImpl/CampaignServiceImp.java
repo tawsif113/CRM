@@ -1,7 +1,8 @@
 package com.crm.serviceImpl;
 
-import com.crm.dto.CampaignDto;
 import com.crm.dto.DeleteResponseDto;
+import com.crm.dto.requestDtos.CampaignRequestDto;
+import com.crm.dto.responseDtos.CampaignResponseDto;
 import com.crm.exception.NotFoundException;
 import com.crm.mapper.CampaignMapper;
 import com.crm.model.Campaign;
@@ -22,18 +23,18 @@ public class CampaignServiceImp implements CampaignService {
     private final CampaignRepository campaignRepository;
 
     @Override
-    public CampaignDto create(CampaignDto dto) {
+    public CampaignResponseDto create(CampaignRequestDto dto) {
         return campaignMapper.toDto(campaignRepository.save(campaignMapper.toEntity(dto)));
     }
 
     @Override
-    public CampaignDto find(Long id) {
+    public CampaignResponseDto find(Long id) {
         return campaignMapper.toDto(campaignRepository
                 .findById(id).orElseThrow(() -> new NotFoundException("Campaign not found")));
     }
 
     @Override
-    public CampaignDto update(Long id, CampaignDto dto) {
+    public CampaignResponseDto update(Long id, CampaignRequestDto dto) {
 
         return campaignRepository.findById(id).map(campaign -> {
             campaignMapper.updateEntity(dto, campaign);
@@ -53,7 +54,7 @@ public class CampaignServiceImp implements CampaignService {
     }
 
     @Override
-    public Page<CampaignDto> findAll(int pageNumber, int pageSize, Sort.Direction direction, String sortField) {
+    public Page<CampaignResponseDto> findAll(int pageNumber, int pageSize, Sort.Direction direction, String sortField) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, direction, sortField);
         Page<Campaign> categories = campaignRepository.findAll(pageable);
         return categories.map(campaignMapper::toDto);

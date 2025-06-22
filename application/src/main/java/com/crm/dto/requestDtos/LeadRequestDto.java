@@ -1,4 +1,4 @@
-package com.crm.dto;
+package com.crm.dto.requestDtos;
 
 import com.crm.enumTypes.LeadSource;
 import com.crm.enumTypes.LeadStatus;
@@ -8,15 +8,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class LeadDTO extends BaseDto {
-
+public class LeadRequestDto {
     private String leadName;
     private LeadSource leadSource;
     private ContactInfo contactInfo;
     private LeadStatus leadStatus;
-    private String leadOwner;
+    private Long leadOwner;
     private Long territory;
     private Integer leadRating;
-
-
 }

@@ -1,18 +1,13 @@
 package com.crm.repository;
 
-import com.crm.dto.LeadDTO;
+import com.crm.enumTypes.LeadStatus;
 import com.crm.model.Lead;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface LeadRepository extends JpaRepository<Lead, Long> {
-    List<Lead> findByLeadStatus(String leadStatus);
-
-    List<Lead> findByLeadOwner(String leadOwner);
-
-    List<Lead> findByTerritory(String territory);
-
-    Optional<Lead> findById(Long leadId);
+    List<Lead> findByLeadStatus(LeadStatus leadStatus);
+    List<Lead> findByTerritoryId(Long territoryId);
+    List<Lead> findByLeadOwnerId(Long salespersonId);
 }

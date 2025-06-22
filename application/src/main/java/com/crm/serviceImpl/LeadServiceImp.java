@@ -1,41 +1,50 @@
 package com.crm.serviceImpl;
+
 import com.crm.dto.DeleteResponseDto;
-import com.crm.dto.LeadDTO;
+import com.crm.dto.requestDtos.LeadRequestDto;
+import com.crm.dto.responseDtos.LeadResponseDto;
+import com.crm.enumTypes.LeadStatus;
+import com.crm.exception.NotFoundException;
 import com.crm.mapper.LeadMapper;
 import com.crm.model.Lead;
+import com.crm.model.Territory;
 import com.crm.repository.LeadRepository;
 import com.crm.service.LeadService;
-import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.crm.service.SalesPersonService;
+import com.crm.service.TerritoryService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
 import java.util.Optional;
 
 @Service
-@Transactional
+@RequiredArgsConstructor
 public class LeadServiceImp implements LeadService {
-    @Autowired
-    private LeadRepository leadRepository;
 
-    @Autowired
-    private LeadMapper leadMapper;
-
-
-
+    private final LeadRepository leadRepository;
+    private final TerritoryService territoryService;
+    private final SalesPersonService salesPersonService;
+    private final LeadMapper leadMapper;
 
     @Override
-    public LeadDTO create(LeadDTO leadDTO) {
+    public LeadResponseDto create(LeadRequestDto leadDTO) {
         Lead lead = leadMapper.toEntity(leadDTO);
+        Territory territory = territoryService.findById(leadDTO.getTerritory());
+        lead.setTerritory(territory);
+        if (leadDTO.getLeadOwner() != null) {
+            lead.setLeadOwner(salesPersonService.findById(leadDTO.getLeadOwner()));
+        }
         lead = leadRepository.save(lead);
         return leadMapper.toDto(lead);
     }
 
     // Get All Leads
     @Override
-    public Page<LeadDTO> findAll(int pageNumber, int pageSize, Sort.Direction direction, String sortField) {
+    public Page<LeadResponseDto> findAll(int pageNumber, int pageSize, Sort.Direction direction, String sortField) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, direction, sortField);
         Page<Lead> leads = leadRepository.findAll(pageable);
         return leads.map(leadMapper::toDto);
@@ -43,65 +52,52 @@ public class LeadServiceImp implements LeadService {
 
     // Get Lead by ID
     @Override
-    public LeadDTO find(Long leadId) {
+    public LeadResponseDto find(Long leadId) {
         Optional<Lead> lead = leadRepository.findById(leadId);
         return lead.map(leadMapper::toDto)
-                .orElseThrow(() -> new RuntimeException("Lead With ID " + leadId + " does not exist"));
+                .orElseThrow(() -> new NotFoundException("Lead With ID " + leadId + " does not exist"));
     }
 
     // Update Lead
     @Override
-    public LeadDTO update(Long leadId, LeadDTO leadDTO) {
-        Optional<Lead> existingLead = leadRepository.findById(leadId);
-        if (existingLead.isPresent()) {
-            Lead lead = existingLead.get();
-            leadMapper.updateEntity(leadDTO, lead);
-            lead = leadRepository.save(lead);
-            return leadMapper.toDto(lead);
-        } else {
-            throw new RuntimeException("Lead With ID " + leadId + " does not exist");
+    public LeadResponseDto update(Long leadId, LeadRequestDto leadDTO) {
+        Lead lead = leadRepository.findById(leadId).orElseThrow(() -> new NotFoundException("Lead With ID " + leadId + " does not exist"));
+        leadMapper.updateEntity(leadDTO, lead);
+        lead.setTerritory(territoryService.findById(leadDTO.getTerritory()));
+        if (leadDTO.getLeadOwner() != null) {
+            lead.setLeadOwner(salesPersonService.findById(leadDTO.getLeadOwner()));
         }
+        lead = leadRepository.save(lead);
+        return leadMapper.toDto(lead);
+
     }
 
     // Delete Lead
     @Override
     public DeleteResponseDto delete(Long leadId) {
-        Optional<Lead> lead = leadRepository.findById(leadId);
-        if (lead.isPresent()) {
-            leadRepository.delete(lead.get());  DeleteResponseDto deleteResponseDto = new DeleteResponseDto();
-            deleteResponseDto.setId(leadId);
-            deleteResponseDto.setMessage("Lead deleted successfully");
-            return deleteResponseDto;
-        } else {
-            throw new RuntimeException("Lead With ID " + leadId + " does not exist");
-        }
-
-
+        Lead lead = leadRepository.findById(leadId)
+                .orElseThrow(() -> new NotFoundException("Lead With ID " + leadId + " does not exist"));
+        leadRepository.delete(lead);
+        DeleteResponseDto deleteResponseDto = new DeleteResponseDto();
+        deleteResponseDto.setMessage("Lead deleted successfully");
+        deleteResponseDto.setId(leadId);
+        return deleteResponseDto;
     }
 
     // Change Lead Status
-    public LeadDTO changeLeadStatus(Long leadId, String newStatus) {
-        Optional<Lead> lead = leadRepository.findById(leadId);
-        if (lead.isPresent()) {
-            Lead updatedLead = lead.get();
-            updatedLead.setLeadStatus(newStatus);
-            updatedLead = leadRepository.save(updatedLead);
-            return leadMapper.toDto(updatedLead);
-        } else {
-            throw new RuntimeException("Lead With ID " + leadId + " does not exist");
-        }
+    @Override
+    public LeadResponseDto changeLeadStatus(Long leadId, LeadStatus newStatus) {
+        Lead lead = leadRepository.findById(leadId).orElseThrow(() -> new NotFoundException("Lead With ID " + leadId + " does not exist"));
+        lead.setLeadStatus(newStatus);
+        return leadMapper.toDto(leadRepository.save(lead));
     }
 
     // Assign/Reassign Lead to Salesperson
-    public LeadDTO assignLeadToSalesperson(Long leadId, String salespersonId) {
-        Optional<Lead> lead = leadRepository.findById(leadId);
-        if (lead.isPresent()) {
-            Lead updatedLead = lead.get();
-            updatedLead.setLeadOwner(salespersonId);
-            updatedLead = leadRepository.save(updatedLead);
-            return leadMapper.toDto(updatedLead);
-        } else {
-            throw new RuntimeException("Lead With ID " + leadId + " does not exist");
-        }
+    @Override
+    public LeadResponseDto assignLeadToSalesperson(Long leadId, Long salespersonId) {
+        Lead lead = leadRepository.findById(leadId).orElseThrow(() -> new NotFoundException("Lead With ID " + leadId + " does not exist"));
+        lead.setLeadOwner(salesPersonService.findById(salespersonId));
+        lead = leadRepository.save(lead);
+        return leadMapper.toDto(lead);
     }
 }

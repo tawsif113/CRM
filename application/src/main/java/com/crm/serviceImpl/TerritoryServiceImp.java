@@ -30,8 +30,7 @@ public class TerritoryServiceImp implements TerritoryService {
     @Override
     public TerritoryResponseDto find(Long id) {
         return territoryMapper
-                .toDto(territoryRepository
-                        .findById(id).orElseThrow(() -> new NotFoundException("Territory not found")));
+                .toDto(findById(id));
     }
 
     @Override
@@ -59,5 +58,12 @@ public class TerritoryServiceImp implements TerritoryService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, direction, sortField);
         Page<Territory> categories = territoryRepository.findAll(pageable);
         return categories.map(territoryMapper::toDto);
+    }
+
+    @Override
+    public Territory findById(Long territoryId) {
+        return territoryRepository
+                .findById(territoryId)
+                .orElseThrow(() -> new NotFoundException("Territory with ID " + territoryId + " does not exist"));
     }
 }

@@ -1,9 +1,8 @@
 package com.crm.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.crm.enumTypes.LeadSource;
+import com.crm.enumTypes.LeadStatus;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,19 +16,23 @@ public class Lead  extends BaseEntity{
     private String leadName;
 
     @Column(name = "lead_source")
-    private String leadSource;
+    @Enumerated(EnumType.STRING)
+    private LeadSource leadSource;
 
     @Embedded
     private ContactInfo contactInfo; // Contact Object
 
     @Column(name = "lead_status")
-    private String leadStatus;  // Status Enum (New, Contacted, Qualified, Lost, Converted)
+    @Enumerated(EnumType.STRING)
+    private LeadStatus leadStatus;  // Status Enum (New, Contacted, Qualified, Lost, Converted)
 
-    @Column(name = "lead_owner")
-    private String leadOwner;  // Salesperson ID
+    @ManyToOne
+    @JoinColumn(name = "lead_owner_id", referencedColumnName = "id")
+    private SalesPerson leadOwner;  // Salesperson ID
 
-    @Column(name = "territory")
-    private String territory;
+    @ManyToOne
+    @JoinColumn(name = "territory_id",referencedColumnName = "id")
+    private Territory territory;
 
     @Column(name = "lead_rating")
     private Integer leadRating;  // Rating (0-100)

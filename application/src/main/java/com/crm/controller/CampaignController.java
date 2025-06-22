@@ -1,6 +1,10 @@
 package com.crm.controller;
 
-import com.crm.dto.CampaignDto;
+import com.crm.dto.DeleteResponseDto;
+import com.crm.dto.requestDtos.CampaignRequestDto;
+import com.crm.dto.responseDtos.CampaignResponseDto;
+import com.crm.middleware.ApiResponseBuilder;
+import com.crm.model.ApiResponse;
 import com.crm.service.CampaignService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -17,31 +21,30 @@ public class CampaignController {
     private final CampaignService campaignService;
 
     @PostMapping
-    public ResponseEntity<CampaignDto> createCampaign(@Valid @RequestBody CampaignDto campaignDto) {
-        return ResponseEntity.ok(campaignService.create(campaignDto));
+    public ResponseEntity<ApiResponse<CampaignResponseDto>> createCampaign(@Valid @RequestBody CampaignRequestDto campaignDto) {
+        return ApiResponseBuilder.success(campaignService.create(campaignDto), "Campaign created successfully");
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CampaignDto> getCampaign(@PathVariable(value = "id") Long id) {
-        return ResponseEntity.ok(campaignService.find(id));
+    public ResponseEntity<ApiResponse<CampaignResponseDto>> getCampaign(@PathVariable(value = "id") Long id) {
+        return ApiResponseBuilder.success(campaignService.find(id), "Campaign retrieved successfully");
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<CampaignDto> updateCampaign(@PathVariable(value = "id") Long id, @Valid @RequestBody CampaignDto campaignDto) {
-        return ResponseEntity.ok(campaignService.update(id, campaignDto));
+    public ResponseEntity<ApiResponse<CampaignResponseDto>> updateCampaign(@PathVariable(value = "id") Long id, @Valid @RequestBody CampaignRequestDto campaignDto) {
+        return ApiResponseBuilder.success(campaignService.update(id, campaignDto), "Campaign updated successfully");
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCampaign(@PathVariable(value = "id") Long id) {
-        campaignService.delete(id);
-        return ResponseEntity.ok("Campaign deleted successfully");
+    public ResponseEntity<ApiResponse<DeleteResponseDto>> deleteCampaign(@PathVariable(value = "id") Long id) {
+        return ApiResponseBuilder.success(campaignService.delete(id), "Campaign deleted successfully");
     }
 
     @GetMapping
-    public ResponseEntity<Page<CampaignDto>> getAllCampaigns(@RequestParam(defaultValue = "0") int pageNumber,
+    public ResponseEntity<ApiResponse<Page<CampaignResponseDto>>> getAllCampaigns(@RequestParam(defaultValue = "0") int pageNumber,
                                                              @RequestParam(defaultValue = "10") int pageSize,
                                                              @RequestParam(defaultValue = "ASC") Sort.Direction direction,
                                                              @RequestParam(defaultValue = "id") String sortField) {
-        return ResponseEntity.ok(campaignService.findAll(pageNumber, pageSize, direction, sortField));
+        return ApiResponseBuilder.success(campaignService.findAll(pageNumber, pageSize, direction, sortField), "Campaigns retrieved successfully");
     }
 }

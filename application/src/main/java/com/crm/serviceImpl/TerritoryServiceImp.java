@@ -1,7 +1,8 @@
 package com.crm.serviceImpl;
 
 import com.crm.dto.DeleteResponseDto;
-import com.crm.dto.TerritoryDto;
+import com.crm.dto.requestDtos.TerritoryRequestDto;
+import com.crm.dto.responseDtos.TerritoryResponseDto;
 import com.crm.exception.NotFoundException;
 import com.crm.mapper.TerritoryMapper;
 import com.crm.model.Territory;
@@ -22,19 +23,19 @@ public class TerritoryServiceImp implements TerritoryService {
     private final TerritoryRepository territoryRepository;
 
     @Override
-    public TerritoryDto create(TerritoryDto dto) {
+    public TerritoryResponseDto create(TerritoryRequestDto dto) {
         return territoryMapper.toDto(territoryRepository.save(territoryMapper.toEntity(dto)));
     }
 
     @Override
-    public TerritoryDto find(Long id) {
+    public TerritoryResponseDto find(Long id) {
         return territoryMapper
                 .toDto(territoryRepository
                         .findById(id).orElseThrow(() -> new NotFoundException("Territory not found")));
     }
 
     @Override
-    public TerritoryDto update(Long id, TerritoryDto dto) {
+    public TerritoryResponseDto update(Long id, TerritoryRequestDto dto) {
         return territoryRepository.findById(id)
                 .map(territory -> {
                     territoryMapper.updateEntity(dto, territory);
@@ -54,7 +55,7 @@ public class TerritoryServiceImp implements TerritoryService {
     }
 
     @Override
-    public Page<TerritoryDto> findAll(int pageNumber, int pageSize, Sort.Direction direction, String sortField) {
+    public Page<TerritoryResponseDto> findAll(int pageNumber, int pageSize, Sort.Direction direction, String sortField) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, direction, sortField);
         Page<Territory> categories = territoryRepository.findAll(pageable);
         return categories.map(territoryMapper::toDto);

@@ -1,14 +1,13 @@
-package com.crm.dto;
+package com.crm.dto.responseDtos;
 
+import com.crm.dto.BaseDto;
 import com.crm.enumTypes.TerritoryStatus;
-import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class TerritoryDto extends BaseDto{
-    @NotBlank
+public class TerritoryResponseDto extends BaseDto {
     private String territoryName;
     private String territoryManager;
     private String region;

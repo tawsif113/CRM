@@ -1,23 +1,17 @@
 package com.crm.controller;
 
 import com.crm.dto.DeleteResponseDto;
-import com.crm.dto.LeadDTO;
 import com.crm.dto.requestDtos.LeadRequestDto;
 import com.crm.dto.responseDtos.LeadResponseDto;
 import com.crm.enumTypes.LeadStatus;
 import com.crm.middleware.ApiResponseBuilder;
 import com.crm.model.ApiResponse;
 import com.crm.service.LeadService;
-import com.crm.serviceImpl.LeadServiceImp;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

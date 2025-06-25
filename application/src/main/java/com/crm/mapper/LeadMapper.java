@@ -1,6 +1,5 @@
 package com.crm.mapper;
 
-import com.crm.dto.LeadDTO;
 import com.crm.dto.requestDtos.LeadRequestDto;
 import com.crm.dto.responseDtos.LeadResponseDto;
 import com.crm.model.Lead;

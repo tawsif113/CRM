@@ -1,6 +1,7 @@
 package com.crm.dto.responseDtos;
 
 import com.crm.dto.BaseDto;
+import com.crm.dto.info.SalespersonInfoDto;
 import com.crm.enumTypes.TerritoryStatus;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +10,7 @@ import lombok.Setter;
 @Setter
 public class TerritoryResponseDto extends BaseDto {
     private String territoryName;
-    private String territoryManager;
+    private SalespersonInfoDto territoryManager;
     private String region;
     private TerritoryStatus territoryStatus;
 }

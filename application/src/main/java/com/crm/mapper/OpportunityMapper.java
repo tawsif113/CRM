@@ -1,10 +1,8 @@
 package com.crm.mapper;
 
-import com.crm.dto.LeadDTO;
 import com.crm.dto.requestDtos.OpportunityRequestDto;
 import com.crm.dto.responseDtos.OpportunityItemResponseDto;
 import com.crm.dto.responseDtos.OpportunityResponseDto;
-import com.crm.model.Lead;
 import com.crm.model.Opportunity;
 import com.crm.model.OpportunityItem;
 import org.mapstruct.*;

@@ -5,8 +5,10 @@ import com.crm.dto.requestDtos.TerritoryRequestDto;
 import com.crm.dto.responseDtos.TerritoryResponseDto;
 import com.crm.exception.NotFoundException;
 import com.crm.mapper.TerritoryMapper;
+import com.crm.model.SalesPerson;
 import com.crm.model.Territory;
 import com.crm.repository.TerritoryRepository;
+import com.crm.service.SalesPersonService;
 import com.crm.service.TerritoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,10 +23,14 @@ public class TerritoryServiceImp implements TerritoryService {
 
     private final TerritoryMapper territoryMapper;
     private final TerritoryRepository territoryRepository;
+    private final SalesPersonService salesPersonService;
 
     @Override
     public TerritoryResponseDto create(TerritoryRequestDto dto) {
-        return territoryMapper.toDto(territoryRepository.save(territoryMapper.toEntity(dto)));
+        SalesPerson salesPerson = salesPersonService.findById(dto.getTerritoryManagerId());
+        Territory territory = territoryMapper.toEntity(dto);
+        territory.setTerritoryManager(salesPerson);
+        return territoryMapper.toDto(territory);
     }
 
     @Override
@@ -38,6 +44,8 @@ public class TerritoryServiceImp implements TerritoryService {
         return territoryRepository.findById(id)
                 .map(territory -> {
                     territoryMapper.updateEntity(dto, territory);
+                    SalesPerson salesPerson = salesPersonService.findById(dto.getTerritoryManagerId());
+                    territory.setTerritoryManager(salesPerson);
                     return territoryMapper.toDto(territoryRepository.save(territory));
                 })
                 .orElseThrow(() -> new NotFoundException("Territory not found"));

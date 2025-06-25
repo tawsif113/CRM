@@ -16,5 +16,5 @@ public class CampaignRequestDto {
     private LocalDate startDate;
     private LocalDate endDate;
     private CampaignStatus status;
-
+    private Long territoryId;
 }

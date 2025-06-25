@@ -9,8 +9,8 @@ import com.crm.enumTypes.OpportunityStage;
 import com.crm.exception.NotFoundException;
 import com.crm.mapper.OpportunityMapper;
 import com.crm.model.*;
-import com.crm.repository.*;
-import com.crm.service.OpportunityService;
+import com.crm.repository.OpportunityRepository;
+import com.crm.service.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
@@ -20,26 +20,21 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-
 @Service
 public class OpportunityServiceImp implements OpportunityService {
     private final OpportunityRepository opportunityRepository;
-    private final LeadRepository leadRepository;
-    private final CustomerRepository customerRepository;
-    private final SalesPersonRepository salesPersonRepository;
+    private final LeadService leadService;
+    private final CustomerService customerService;
+    private final SalesPersonService salesPersonService;
     private final OpportunityMapper opportunityMapper;
-    private final CampaignRepository campaignRepository;
-    private final ItemRepository itemRepository;
-
-
+    private final CampaignService campaignService;
+    private final ItemService itemService;
 
     @Transactional
     @Override
@@ -55,61 +50,10 @@ public class OpportunityServiceImp implements OpportunityService {
                 throw new BadRequestException("Lead must be null for customer-originated opportunities");
             }
 
-            Lead lead = null;
-            if (dto.getLeadId() != null) {
-                lead = leadRepository.findById(dto.getLeadId())
-                        .orElseThrow(() -> new NotFoundException("Lead not found with id: " + dto.getLeadId()));
-            }
-
-            Customer customer = null;
-            if( dto.getCustomerId() != null){
-                 customer = customerRepository.findById(dto.getCustomerId())
-                    .orElseThrow(() -> new NotFoundException("Customer not found with id: " + dto.getCustomerId()));
-            }
-
-
-            SalesPerson nextContactBy = null;
-            if (dto.getNextContactBy() != null) {
-                nextContactBy = salesPersonRepository.findById(dto.getNextContactBy())
-                        .orElseThrow(() -> new NotFoundException("SalesPerson not found with id: " + dto.getNextContactBy()));
-            }
-
-            SalesPerson opportunityOwner = salesPersonRepository.findById(dto.getOpportunityOwner())
-                    .orElseThrow(() -> new NotFoundException("SalesPerson not found with id: " + dto.getOpportunityOwner()));
-
-            Campaign campaign = null;
-            if (dto.getSalesCampaign() != null) {
-                campaign = campaignRepository.findById(dto.getSalesCampaign())
-                        .orElseThrow(() -> new NotFoundException("Campaign not found with id: " + dto.getSalesCampaign()));
-            }
-
             Opportunity opportunity = opportunityMapper.toEntity(dto);
-            opportunity.setLead(lead);
-            opportunity.setCustomer(customer);
-            opportunity.setNextContactBy(nextContactBy);
-            opportunity.setOpportunityOwner(opportunityOwner);
-            opportunity.setSalesCampaign(campaign);
+            setValues(opportunity, dto);
 
-            List<OpportunityItem> items = dto.getItems().stream()
-                    .map(itemDto -> {
-                        OpportunityItem line = new OpportunityItem();
-                        line.setOpportunity(opportunity);
-                        Item item = itemRepository.findById(itemDto.getItemId())
-                                .orElseThrow(() -> new NotFoundException("Item not found with id: " + itemDto.getItemId()));
-                        line.setItem(item);
-                        line.setQuantity(itemDto.getQuantity());
-                        return line;
-                    })
-                    .collect(Collectors.toList());
-            if (items.isEmpty()) {
-                throw new BadRequestException("At least one item must be provided for the opportunity");
-            }
-            opportunity.setItems(items);
-            Opportunity savedOpp = opportunityRepository.save(opportunity);
-
-
-
-            return opportunityMapper.toDto(savedOpp);
+            return opportunityMapper.toDto(opportunityRepository.save(opportunity));
 
         }  catch (Exception ex) {
             throw new IllegalArgumentException("Failed to create Opportunity: " + ex.getMessage());
@@ -127,8 +71,8 @@ public class OpportunityServiceImp implements OpportunityService {
     public OpportunityResponseDto update(Long id, OpportunityRequestDto dto) {
 
         try {
-            Opportunity opportunity = opportunityRepository.findById(id)
-                    .orElseThrow(() -> new NotFoundException("Opportunity not found with id: " + id));
+
+            Opportunity opportunity = findById(id);
 
             if (dto.getOpportunityFrom() == null) {
                 throw new NotFoundException("opportunity_from must be provided");
@@ -140,17 +84,9 @@ public class OpportunityServiceImp implements OpportunityService {
                 throw new NotFoundException("Lead must be null for customer-originated opportunities");
             }
 
-            if (dto.getLeadId() != null) {
-                leadRepository.findById(dto.getLeadId())
-                        .orElseThrow(() -> new NotFoundException("Lead not found with id: " + dto.getLeadId()));
-            }
-
-
-            if (dto.getCustomerId() != null) {
-              customerRepository.findById(dto.getCustomerId())
-                        .orElseThrow(() -> new NotFoundException("Customer not found with id: " + dto.getCustomerId()));
-            }
             opportunityMapper.updateEntity(dto,opportunity);
+            setValues(opportunity, dto);
+
             return opportunityMapper.toDto(opportunityRepository.save(opportunity));
         }
         catch (Exception ex) {
@@ -160,9 +96,8 @@ public class OpportunityServiceImp implements OpportunityService {
 
     @Override
     public DeleteResponseDto delete(Long id) {
-        opportunityRepository.findById(id).orElseThrow(()-> new NotFoundException("Opportunity not found with id: " + id));
         DeleteResponseDto deleteResponseDto = new DeleteResponseDto();
-        opportunityRepository.deleteById(id);
+        opportunityRepository.delete(findById(id));
         deleteResponseDto.setId(id);
         deleteResponseDto.setMessage("Opportunity deleted successfully");
         return deleteResponseDto;
@@ -192,5 +127,48 @@ public class OpportunityServiceImp implements OpportunityService {
 
         return new OpportunityStatsResponse(totalOpportunities, stageSummary);
 
+    }
+
+    @Override
+    public Opportunity findById(Long id) {
+        return opportunityRepository.findById(id).orElseThrow(() -> new NotFoundException("Opportunity not found with id: " + id));
+    }
+
+    public void setValues(Opportunity opportunity, OpportunityRequestDto dto) throws BadRequestException {
+        if (dto.getLeadId() != null) {
+            Lead lead = leadService.findById(dto.getLeadId());
+            opportunity.setLead(lead);
+        }
+        if( dto.getCustomerId() != null){
+            Customer customer = customerService.findById(dto.getCustomerId());
+            opportunity.setCustomer(customer);
+        }
+        if (dto.getNextContactBy() != null) {
+            SalesPerson nextContactBy = salesPersonService.findById(dto.getNextContactBy());
+            opportunity.setNextContactBy(nextContactBy);
+        }
+
+        SalesPerson opportunityOwner = salesPersonService.findById(dto.getOpportunityOwner());
+        opportunity.setOpportunityOwner(opportunityOwner);
+
+        if (dto.getSalesCampaign() != null) {
+            Campaign campaign = campaignService.findById(dto.getSalesCampaign());
+            opportunity.setSalesCampaign(campaign);
+        }
+
+        List<OpportunityItem> items = dto.getItems().stream()
+                .map(itemDto -> {
+                    OpportunityItem line = new OpportunityItem();
+                    line.setOpportunity(opportunity);
+                    Item item = itemService.findById(itemDto.getItemId());
+                    line.setItem(item);
+                    line.setQuantity(itemDto.getQuantity());
+                    return line;
+                })
+                .collect(Collectors.toList());
+        if (items.isEmpty()) {
+            throw new BadRequestException("At least one item must be provided for the opportunity");
+        }
+        opportunity.setItems(items);
     }
 }

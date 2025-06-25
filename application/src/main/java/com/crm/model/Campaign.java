@@ -33,4 +33,9 @@ public class Campaign extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CampaignStatus status;
+
+    @ManyToOne
+    @JoinColumn(name = "territory_id", referencedColumnName = "id")
+    private Territory territory;
+
 }

@@ -1,6 +1,7 @@
 package com.crm.dto.responseDtos;
 
 import com.crm.dto.BaseDto;
+import com.crm.dto.info.TerritoryInfoDto;
 import com.crm.enumTypes.CampaignStatus;
 import com.crm.enumTypes.CampaignType;
 import lombok.Getter;
@@ -17,4 +18,5 @@ public class CampaignResponseDto extends BaseDto {
     private LocalDate startDate;
     private LocalDate endDate;
     private CampaignStatus status;
+    private TerritoryInfoDto territory;
 }

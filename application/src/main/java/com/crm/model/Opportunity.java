@@ -25,11 +25,11 @@ public class Opportunity extends BaseEntity {
     private String opportunityName;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "lead_id", nullable = true)
+    @JoinColumn(name = "lead_id")
     private Lead lead;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = true)
+    @JoinColumn(name = "customer_id")
     private Customer customer;
 
     @Enumerated(EnumType.STRING)
@@ -58,7 +58,7 @@ public class Opportunity extends BaseEntity {
     private LocalDate nextContactDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "next_contact_by", referencedColumnName = "id", nullable = true)
+    @JoinColumn(name = "next_contact_by", referencedColumnName = "id")
     private SalesPerson nextContactBy;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -66,7 +66,7 @@ public class Opportunity extends BaseEntity {
     private SalesPerson opportunityOwner;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sales_campaign", nullable = true)
+    @JoinColumn(name = "sales_campaign")
     private Campaign salesCampaign;
     @OneToMany(
             mappedBy = "opportunity",

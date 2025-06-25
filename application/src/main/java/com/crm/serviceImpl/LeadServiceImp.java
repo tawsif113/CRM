@@ -61,7 +61,7 @@ public class LeadServiceImp implements LeadService {
     // Update Lead
     @Override
     public LeadResponseDto update(Long leadId, LeadRequestDto leadDTO) {
-        Lead lead = leadRepository.findById(leadId).orElseThrow(() -> new NotFoundException("Lead With ID " + leadId + " does not exist"));
+        Lead lead = findById(leadId);
         leadMapper.updateEntity(leadDTO, lead);
         lead.setTerritory(territoryService.findById(leadDTO.getTerritory()));
         if (leadDTO.getLeadOwner() != null) {
@@ -75,8 +75,7 @@ public class LeadServiceImp implements LeadService {
     // Delete Lead
     @Override
     public DeleteResponseDto delete(Long leadId) {
-        Lead lead = leadRepository.findById(leadId)
-                .orElseThrow(() -> new NotFoundException("Lead With ID " + leadId + " does not exist"));
+        Lead lead = findById(leadId);
         leadRepository.delete(lead);
         DeleteResponseDto deleteResponseDto = new DeleteResponseDto();
         deleteResponseDto.setMessage("Lead deleted successfully");
@@ -87,7 +86,7 @@ public class LeadServiceImp implements LeadService {
     // Change Lead Status
     @Override
     public LeadResponseDto changeLeadStatus(Long leadId, LeadStatus newStatus) {
-        Lead lead = leadRepository.findById(leadId).orElseThrow(() -> new NotFoundException("Lead With ID " + leadId + " does not exist"));
+        Lead lead = findById(leadId);
         lead.setLeadStatus(newStatus);
         return leadMapper.toDto(leadRepository.save(lead));
     }
@@ -95,9 +94,14 @@ public class LeadServiceImp implements LeadService {
     // Assign/Reassign Lead to Salesperson
     @Override
     public LeadResponseDto assignLeadToSalesperson(Long leadId, Long salespersonId) {
-        Lead lead = leadRepository.findById(leadId).orElseThrow(() -> new NotFoundException("Lead With ID " + leadId + " does not exist"));
+        Lead lead = findById(leadId);
         lead.setLeadOwner(salesPersonService.findById(salespersonId));
         lead = leadRepository.save(lead);
         return leadMapper.toDto(lead);
+    }
+
+    @Override
+    public Lead findById(Long leadId) {
+        return leadRepository.findById(leadId).orElseThrow(() -> new NotFoundException("Lead With ID " + leadId + " does not exist"));
     }
 }

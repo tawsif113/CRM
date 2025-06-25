@@ -24,7 +24,7 @@ public class Lead  extends BaseEntity{
 
     @Column(name = "lead_status")
     @Enumerated(EnumType.STRING)
-    private LeadStatus leadStatus;  // Status Enum (New, Contacted, Qualified, Lost, Converted)
+    private LeadStatus leadStatus;
 
     @ManyToOne
     @JoinColumn(name = "lead_owner_id", referencedColumnName = "id")

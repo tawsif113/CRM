@@ -14,8 +14,9 @@ public class Territory extends BaseEntity{
     @Column(name = "territory_name")
     private String territoryName;
 
-    @Column(name = "territory_manager")
-    private String territoryManager; // Assuming salesperson.id is stored as UUID string
+    @ManyToOne
+    @JoinColumn(name = "territory_manager_id")
+    private SalesPerson territoryManager;
 
     @Column(name = "region")
     private String region;

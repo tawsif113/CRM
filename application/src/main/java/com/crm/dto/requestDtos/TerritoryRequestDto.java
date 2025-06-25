@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class TerritoryRequestDto {
     private String territoryName;
-    private String territoryManager;
+    private Long territoryManagerId;
     private String region;
     private TerritoryStatus territoryStatus;
 }

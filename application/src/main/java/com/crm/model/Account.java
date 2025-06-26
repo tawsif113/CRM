@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
@@ -15,20 +17,15 @@ public class Account extends BaseEntity{
     private String accountName;
     // e.g., "Accounts Receivable – Retail", "Advance Payments"
 
-    /**
-     * Type of account (e.g., "RECEIVABLE", "ADVANCE", "BANK", etc.).
-     * You could also use an enum if you have a fixed set of types.
-     */
     @Enumerated(EnumType.STRING)
     @Column(name = "account_type", nullable = false)
     private AccountType accountType;
 
-    /**
-     * A code or number used in your general ledger chart of accounts.
-     * For example: "AR-1001", "ADV-2001".
-     */
     @Column(name = "account_code", unique = true)
     private String accountCode;
 
     private String accountNumber;
+
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL)
+    private List<AccountingLedger> ledgerEntries;
 }

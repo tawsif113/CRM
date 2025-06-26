@@ -44,6 +44,7 @@ public class CampaignController {
     public ResponseEntity<ApiResponse<Page<CampaignResponseDto>>> getAllCampaigns(@RequestParam(defaultValue = "0") int pageNumber,
                                                              @RequestParam(defaultValue = "10") int pageSize,
                                                              @RequestParam(defaultValue = "ASC") Sort.Direction direction,
+
                                                              @RequestParam(defaultValue = "id") String sortField) {
         return ApiResponseBuilder.success(campaignService.findAll(pageNumber, pageSize, direction, sortField), "Campaigns retrieved successfully");
     }

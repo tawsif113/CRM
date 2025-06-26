@@ -12,6 +12,8 @@ import com.crm.repository.*;
 import com.crm.service.CustomerGroupService;
 import com.crm.service.CustomerService;
 import com.crm.service.PaymentTermsService;
+import com.crm.service.TerritoryService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class CustomerServiceImp implements CustomerService {
 
     private final CustomerRepository customerRepository;
@@ -30,27 +33,15 @@ public class CustomerServiceImp implements CustomerService {
     private final PaymentTermsService paymentTermsService;
     private final SalesPersonRepository salesPersonRepository;
     private final AccountLedgerRepository accountLedgerRepository;
-    private final TerritoryRepository territoryRepository;
+    private final TerritoryService territoryService;
     private final CustomerMapper mapper;
-
-    public CustomerServiceImp(CustomerRepository customerRepository, CustomerGroupService customerGroupService, PriceListRepository priceListRepository, PaymentTermsService paymentTermsService, SalesPersonRepository salesPersonRepository, AccountLedgerRepository accountLedgerRepository, TerritoryRepository territoryRepository, CustomerMapper mapper) {
-        this.customerRepository = customerRepository;
-        this.customerGroupService = customerGroupService;
-        this.priceListRepository = priceListRepository;
-        this.paymentTermsService = paymentTermsService;
-        this.salesPersonRepository = salesPersonRepository;
-        this.accountLedgerRepository = accountLedgerRepository;
-        this.territoryRepository = territoryRepository;
-        this.mapper = mapper;
-    }
 
     @Override
     public CustomerResponseDto create(CustomerRequestDto dto) {
 
         Customer customer = mapper.toEntity(dto);
-        if(dto.getCustomerGroupId() != null) customer
-                .setCustomerGroup(customerGroupService
-                        .findById(dto.getCustomerGroupId()));
+        if(dto.getCustomerGroupId() != null)
+            customer.setCustomerGroup(customerGroupService.findById(dto.getCustomerGroupId()));
 
         if(dto.getPriceListId() != null) customer
                 .setPriceList(priceListRepository
@@ -69,7 +60,7 @@ public class CustomerServiceImp implements CustomerService {
         }
 
         if(dto.getTerritoryId() != null){
-            customer.setTerritory(territoryRepository.findById(dto.getTerritoryId()).orElseThrow(()->new NotFoundException("Territory Not Found")));
+            customer.setTerritory(territoryService.findById(dto.getTerritoryId()));
         }
 
         if (dto.getAccountingLedgerId() != null) {
@@ -116,7 +107,7 @@ public class CustomerServiceImp implements CustomerService {
         }
 
         if(dto.getTerritoryId() != null){
-            customer.setTerritory(territoryRepository.findById(dto.getTerritoryId()).orElseThrow(()->new NotFoundException("Territory Not Found")));
+            customer.setTerritory(territoryService.findById(dto.getTerritoryId()));
         }
 
         if (dto.getAccountingLedgerId() != null) {

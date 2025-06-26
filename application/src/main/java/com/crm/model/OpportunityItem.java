@@ -9,11 +9,7 @@ import java.math.BigDecimal;
 @Table(name = "opportunity_item")
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
 public class OpportunityItem extends BaseEntity {
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "opportunity_id", nullable = false)

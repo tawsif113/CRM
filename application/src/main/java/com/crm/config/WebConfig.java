@@ -17,6 +17,7 @@ public class WebConfig {
                         .allowedOrigins(
                                 "https://crm-frontend-taupe.vercel.app",
                                 "https://crm-production-a10d.up.railway.app",
+                                "https://crm-production-747d.up.railway.app",
                                 "http://localhost:3000"
                         )
                         .allowedMethods("*")

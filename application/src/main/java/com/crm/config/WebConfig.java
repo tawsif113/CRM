@@ -15,9 +15,9 @@ public class WebConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Allow all endpoints
                         .allowedOrigins(
-                                "https://crm-frontend-taupe.vercel.app/**",
-                                "https://crm-production-747d.up.railway.app/**",
-                                "http://localhost:3000/**"
+                                "https://crm-frontend-taupe.vercel.app",
+                                "https://crm-production-747d.up.railway.app",
+                                "http://localhost:3000"
                         )
                         .allowedMethods("*")
                         .allowedHeaders("*")

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/campaigns")
 @RequiredArgsConstructor
+
 public class CampaignController {
 
     private final CampaignService campaignService;

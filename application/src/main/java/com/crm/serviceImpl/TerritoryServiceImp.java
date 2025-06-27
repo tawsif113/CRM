@@ -30,7 +30,7 @@ public class TerritoryServiceImp implements TerritoryService {
         SalesPerson salesPerson = salesPersonService.findById(dto.getTerritoryManagerId());
         Territory territory = territoryMapper.toEntity(dto);
         territory.setTerritoryManager(salesPerson);
-        return territoryMapper.toDto(territory);
+        return territoryMapper.toDto(territoryRepository.save(territory));
     }
 
     @Override

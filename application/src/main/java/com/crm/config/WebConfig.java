@@ -14,7 +14,10 @@ public class WebConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**") // Allow all endpoints
-                        .allowedOrigins("*") // Replace with frontend URL
+                        .allowedOrigins(
+                                "https://crm-frontend-taupe.vercel.app",
+                                "https://crm-production-a10d.up.railway.app"
+                        )
                         .allowedMethods("*")
                         .allowedHeaders("*")
                         .allowCredentials(true); // If using cookies or auth headers

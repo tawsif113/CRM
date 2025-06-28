@@ -9,7 +9,12 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")  // Applies to all endpoints
-                .allowedOrigins("https://crm-production-747d.up.railway.app","https://crm-frontend-taupe.vercel.app")  // Swagger UI domain
+                .allowedOrigins(
+                        "http://localhost:3000",
+                        "http://localhost:3001",
+                        "https://crm-production-747d.up.railway.app",
+                        "https://crm-frontend-taupe.vercel.app"
+                )  // Swagger UI domain
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH")
                 .allowedHeaders("*")
                 .allowCredentials(true);

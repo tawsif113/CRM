@@ -12,6 +12,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedOrigins(
                         "http://localhost:3000",
                         "http://localhost:3001",
+                        "https://crm-production-747d.up.railway.app/swagger-ui/index.html",
                         "https://crm-production-747d.up.railway.app",
                         "https://crm-frontend-taupe.vercel.app"
                 )  // Swagger UI domain
